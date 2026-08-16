@@ -11,6 +11,10 @@ from utils.ml_engine import DataPreprocessor, AttritionPredictor
 
 st.set_page_config(page_title='AI Tahminleri - NexHR', page_icon='🤖', layout='wide')
 
+if not st.session_state.get('authenticated', False):
+    st.warning("🔒 Lütfen ana sayfadan giriş yapın.")
+    st.stop()
+
 COLORS = ['#6366F1', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#8B5CF6', '#14B8A6', '#F97316']
 
 st.markdown("""

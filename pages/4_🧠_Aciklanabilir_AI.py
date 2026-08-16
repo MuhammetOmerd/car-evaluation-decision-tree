@@ -11,6 +11,10 @@ from utils.ml_engine import DataPreprocessor, AttritionPredictor, ExplainableAI
 
 st.set_page_config(page_title='Açıklanabilir AI - NexHR', page_icon='🧠', layout='wide')
 
+if not st.session_state.get('authenticated', False):
+    st.warning("🔒 Lütfen ana sayfadan giriş yapın.")
+    st.stop()
+
 st.markdown("""
 <style>
     .info-box {

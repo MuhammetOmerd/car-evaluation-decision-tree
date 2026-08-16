@@ -6,9 +6,33 @@ import plotly.graph_objects as go
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils.data_processor import load_data, get_kpi_metrics, get_department_stats
+from utils.report_generator import generate_pdf_report, generate_excel_report
 
 st.set_page_config(page_title='NexHR - AI Performans Analitiği', page_icon='🧠', layout='wide')
 
+# --- 1. LOGIN (KIMLIK DOGRULAMA) SISTEMI ---
+if 'authenticated' not in st.session_state:
+    st.session_state['authenticated'] = False
+
+if not st.session_state['authenticated']:
+    st.markdown("<h2 style='text-align: center;'>🔒 Lütfen Giriş Yapın</h2>", unsafe_allow_html=True)
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.form("login_form"):
+            username = st.text_input("Kullanıcı Adı")
+            password = st.text_input("Şifre", type="password")
+            submit = st.form_submit_button("Giriş Yap", use_container_width=True)
+            
+            if submit:
+                if username == "admin" and password == "nexhr2026":
+                    st.session_state['authenticated'] = True
+                    st.success("Giriş başarılı! Yönlendiriliyorsunuz...")
+                    st.rerun()
+                else:
+                    st.error("Kullanıcı adı veya şifre hatalı!")
+    st.stop() # Giris yapilmadan asagiya inilmez
+
+# --- GÜVENLİ ALAN ---
 COLORS = ['#6366F1', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#8B5CF6', '#14B8A6', '#F97316']
 
 st.markdown("""
@@ -38,25 +62,76 @@ st.markdown("""
 st.title("🧠 NexHR - AI Performans Analitiği")
 st.markdown("İnsan kaynakları verilerini yapay zeka ile analiz ederek çalışan performansı ve işten ayrılma risklerini tahmin eden akıllı analitik platformu.")
 
-@st.cache_data
-def get_data():
+# --- 2. DOSYA YUKLEME (FILE UPLOAD) SİSTEMİ ---
+with st.sidebar:
+    st.header("⚙️ Ayarlar & Veri")
+    st.markdown("Kendi şirket verinizi yükleyin.")
+    uploaded_file = st.file_uploader("Excel veya CSV Yükle", type=['csv', 'xlsx'])
+    
+    if uploaded_file is not None:
+        try:
+            if uploaded_file.name.endswith('.csv'):
+                custom_df = pd.read_csv(uploaded_file)
+            else:
+                custom_df = pd.read_excel(uploaded_file)
+            st.session_state['custom_df'] = custom_df
+            st.success("Özel veri başarıyla yüklendi!")
+        except Exception as e:
+            st.error(f"Dosya okuma hatası: {e}")
+            
+    if st.button("Orijinal Veriye Dön", use_container_width=True):
+        if 'custom_df' in st.session_state:
+            del st.session_state['custom_df']
+            st.rerun()
+
+    st.markdown("---")
+    if st.button("Çıkış Yap", type="secondary", use_container_width=True):
+        st.session_state['authenticated'] = False
+        st.rerun()
+
+@st.cache_data(ttl=60) # Cache süresi verip özel verinin güncellenmesini sağla
+def get_cached_data():
     return load_data()
 
 try:
-    df = get_data()
+    # Veriyi session state veya dosyadan al (data_processor icinde yazili)
+    df = load_data() 
     
     kpi = get_kpi_metrics(df)
     
+    # --- 3. RAPOR İNDİRME ---
+    st.sidebar.markdown("---")
+    st.sidebar.header("📥 Raporlar")
+    
+    pdf_data = generate_pdf_report(df, kpi)
+    st.sidebar.download_button(
+        label="📄 PDF Özeti İndir",
+        data=pdf_data,
+        file_name="NexHR_Raporu.pdf",
+        mime="application/pdf",
+        use_container_width=True
+    )
+    
+    excel_data = generate_excel_report(df)
+    st.sidebar.download_button(
+        label="📊 Detaylı Excel İndir",
+        data=excel_data,
+        file_name="NexHR_Veriler.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        use_container_width=True
+    )
+
+    # --- KPI KARTLARI ---
     col1, col2, col3 = st.columns(3)
     with col1:
         st.markdown(f'<div class="metric-card"><div class="metric-title">Toplam Çalışan</div><div class="metric-value">{kpi["total_employees"]}</div></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="metric-card"><div class="metric-title">İşten Ayrılma Oranı</div><div class="metric-value">%{kpi["attrition_rate"]:.1f}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card"><div class="metric-title">İşten Ayrılma Oranı</div><div class="metric-value">%{kpi["attrition_rate"]*100:.1f}</div></div>', unsafe_allow_html=True)
     with col2:
         st.markdown(f'<div class="metric-card" style="border-left-color: #10B981;"><div class="metric-title">Ort. Performans</div><div class="metric-value">{kpi["avg_performance"]:.2f}</div></div>', unsafe_allow_html=True)
         st.markdown(f'<div class="metric-card" style="border-left-color: #10B981;"><div class="metric-title">Ort. Maaş</div><div class="metric-value">₺{kpi["avg_income"]:,.0f}</div></div>', unsafe_allow_html=True)
     with col3:
         st.markdown(f'<div class="metric-card" style="border-left-color: #EC4899;"><div class="metric-title">Ort. Memnuniyet</div><div class="metric-value">{kpi["avg_satisfaction"]:.2f}</div></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="metric-card" style="border-left-color: #EC4899;"><div class="metric-title">Fazla Mesai Oranı</div><div class="metric-value">%{kpi["overtime_rate"]:.1f}</div></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="metric-card" style="border-left-color: #EC4899;"><div class="metric-title">Fazla Mesai Oranı</div><div class="metric-value">%{kpi["overtime_rate"]*100:.1f}</div></div>', unsafe_allow_html=True)
 
     dept_stats = pd.DataFrame(get_department_stats(df))
     

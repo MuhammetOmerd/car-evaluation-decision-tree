@@ -5,8 +5,13 @@ import os
 import pandas as pd
 import numpy as np
 
+import streamlit as st
+
 def load_data():
-    """Verisetini yükler."""
+    """Verisetini yükler. Özel veri varsa onu, yoksa varsayılanı döner."""
+    if 'custom_df' in st.session_state and st.session_state['custom_df'] is not None:
+        return st.session_state['custom_df']
+        
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     file_path = os.path.join(project_root, 'data', 'hr_employee_data.csv')
     return pd.read_csv(file_path)
