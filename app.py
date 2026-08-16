@@ -58,7 +58,7 @@ try:
         st.markdown(f'<div class="metric-card" style="border-left-color: #EC4899;"><div class="metric-title">Ort. Memnuniyet</div><div class="metric-value">{kpi["avg_satisfaction"]:.2f}</div></div>', unsafe_allow_html=True)
         st.markdown(f'<div class="metric-card" style="border-left-color: #EC4899;"><div class="metric-title">Fazla Mesai Oranı</div><div class="metric-value">%{kpi["overtime_rate"]:.1f}</div></div>', unsafe_allow_html=True)
 
-    dept_stats = get_department_stats(df)
+    dept_stats = pd.DataFrame(get_department_stats(df))
     
     st.subheader("Departman Performans Karşılaştırması")
     fig_dept = px.bar(dept_stats.sort_values('avg_performance', ascending=True).reset_index(), 
