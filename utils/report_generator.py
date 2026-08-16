@@ -2,6 +2,7 @@ import io
 import pandas as pd
 from fpdf import FPDF
 from datetime import datetime
+import streamlit as st
 
 class PDFReport(FPDF):
     def header(self):
@@ -16,6 +17,7 @@ class PDFReport(FPDF):
         self.set_font('helvetica', 'I', 8)
         self.cell(0, 10, f'Sayfa {self.page_no()}', 0, 0, 'C')
 
+@st.cache_data(show_spinner=False)
 def generate_pdf_report(df, kpi):
     """Verilen metriklerle bir PDF raporu uretir ve byte dizisi olarak doner."""
     pdf = PDFReport()
@@ -57,6 +59,7 @@ def generate_pdf_report(df, kpi):
     # Byte dizisine cevir
     return bytes(pdf.output())
 
+@st.cache_data(show_spinner=False)
 def generate_excel_report(df):
     """DataFrame'i Excel formatinda bellege yazar ve byte dizisi olarak doner."""
     output = io.BytesIO()
