@@ -39,9 +39,16 @@ def generate_pdf_report(df, kpi):
     pdf.cell(0, 10, '2. Departmanlara Gore Isten Ayrilma', 0, 1)
     pdf.set_font('helvetica', '', 11)
     
+    def replace_tr(text):
+        tr_map = {'ı':'i', 'İ':'I', 'ş':'s', 'Ş':'S', 'ğ':'g', 'Ğ':'G', 'ü':'u', 'Ü':'U', 'ö':'o', 'Ö':'O', 'ç':'c', 'Ç':'C'}
+        for s, r in tr_map.items():
+            text = text.replace(s, r)
+        return text
+
     dept_attr = df[df['Attrition'] == 'Evet'].groupby('Department').size().reset_index(name='Ayrilan_Kisi')
     for _, row in dept_attr.iterrows():
-        pdf.cell(0, 8, f"- {row['Department']} Departmani: {row['Ayrilan_Kisi']} kisi ayrildi.", 0, 1)
+        dept_name = replace_tr(str(row['Department']))
+        pdf.cell(0, 8, f"- {dept_name} Departmani: {row['Ayrilan_Kisi']} kisi ayrildi.", 0, 1)
         
     pdf.ln(10)
     pdf.set_font('helvetica', 'I', 10)
