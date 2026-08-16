@@ -5,9 +5,13 @@ from datetime import datetime
 import streamlit as st
 
 class PDFReport(FPDF):
+    def __init__(self, company_name="NexHR"):
+        super().__init__()
+        self.company_name = company_name
+        
     def header(self):
         self.set_font('helvetica', 'B', 15)
-        self.cell(0, 10, 'NexHR - AI Performans Analitigi Raporu', 0, 1, 'C')
+        self.cell(0, 10, f'{self.company_name} - AI Performans Analitigi Raporu', 0, 1, 'C')
         self.set_font('helvetica', 'I', 10)
         self.cell(0, 10, f'Olusturulma Tarihi: {datetime.now().strftime("%Y-%m-%d %H:%M")}', 0, 1, 'C')
         self.ln(10)
@@ -18,17 +22,14 @@ class PDFReport(FPDF):
         self.cell(0, 10, f'Sayfa {self.page_no()}', 0, 0, 'C')
 
 @st.cache_data(show_spinner=False)
-def generate_pdf_report(df, kpi):
+def generate_pdf_report(df, kpi, company_name="NexHR"):
     """Verilen metriklerle bir PDF raporu uretir ve byte dizisi olarak doner."""
-    pdf = PDFReport()
+    pdf = PDFReport(company_name=company_name)
     pdf.add_page()
     
-    # KPI Bolumu
+    # Basliklari zaten header ekliyor, o yuzden burada tekrar eklemeye gerek yok
     pdf.set_font('helvetica', 'B', 14)
     pdf.cell(0, 10, '1. Genel Performans Gostergeleri (KPI)', 0, 1)
-    
-    pdf.set_font('helvetica', '', 12)
-    pdf.cell(0, 8, f"Toplam Calisan: {kpi['total_employees']}", 0, 1)
     pdf.cell(0, 8, f"Isten Ayrilma Orani: %{kpi['attrition_rate']:.1f}", 0, 1)
     pdf.cell(0, 8, f"Ortalama Performans: {kpi['avg_performance']:.2f} / 5.0", 0, 1)
     pdf.cell(0, 8, f"Ortalama Memnuniyet: {kpi['avg_satisfaction']:.2f} / 5.0", 0, 1)

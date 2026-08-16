@@ -28,50 +28,78 @@ if not has_supabase_credentials():
     st.stop()
 
 if not st.session_state['authenticated']:
-    st.markdown("<h2 style='text-align: center;'>🔒 NexHR SaaS Platformu</h2>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        tab1, tab2, tab3 = st.tabs(["Giriş Yap", "Kayıt Ol", "Şifremi Unuttum"])
+    if not st.session_state.get('show_login', False):
+        st.markdown("<h1 style='text-align: center; font-size: 3.5rem; margin-top: 40px;'>Geleceğin İK Yönetimi: <span style='color: #EC4899;'>NexHR</span></h1>", unsafe_allow_html=True)
+        st.markdown("<h3 style='text-align: center; font-weight: normal; color: #a0a0b2;'>Yapay Zeka ile şirketinizin yeteneklerini keşfedin, riskleri önceden tahmin edin.</h3>", unsafe_allow_html=True)
         
-        with tab1:
-            with st.form("login_form"):
-                email = st.text_input("E-posta Adresi")
-                password = st.text_input("Şifre", type="password")
-                submit = st.form_submit_button("Giriş Yap", use_container_width=True)
-                if submit:
-                    try:
-                        res = sign_in(email, password)
-                        st.session_state['authenticated'] = True
-                        st.session_state['user_email'] = email
-                        st.success("Giriş başarılı! Yönlendiriliyorsunuz...")
-                        st.rerun()
-                    except Exception as e:
-                        st.error("Kullanıcı adı veya şifre hatalı! (Veya E-postanızı henüz onaylamadınız)")
-                        
-        with tab2:
-            with st.form("register_form"):
-                new_email = st.text_input("E-posta Adresi (Geçerli bir adres girin)")
-                new_password = st.text_input("Şifre (En az 6 karakter)", type="password")
-                submit_reg = st.form_submit_button("Kayıt Ol", use_container_width=True)
-                if submit_reg:
-                    try:
-                        res = sign_up(new_email, new_password)
-                        st.success("Kayıt başarılı! Lütfen E-postanıza gelen onay linkine tıklayın.")
-                        st.info("Not: Spam (Gereksiz) kutusunu kontrol etmeyi unutmayın.")
-                    except Exception as e:
-                        st.error(f"Kayıt sırasında hata oluştu: {str(e)}")
-                        
-        with tab3:
-            with st.form("reset_form"):
-                reset_email = st.text_input("Şifrenizi sıfırlamak için E-posta adresinizi girin")
-                submit_reset = st.form_submit_button("Şifre Sıfırlama Bağlantısı Gönder", use_container_width=True)
-                if submit_reset:
-                    try:
-                        reset_password(reset_email)
-                        st.success("Şifre sıfırlama bağlantısı E-posta adresinize gönderildi!")
-                    except Exception as e:
-                        st.error("Bir hata oluştu, lütfen e-posta adresinizi kontrol edin.")
-    st.stop() # Giris yapilmadan asagiya inilmez
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.info("🧠 **AI Destekli Analiz**\n\nİşten ayrılma risklerini ve performans metriklerini makine öğrenmesi ile önceden tahmin edin.")
+        with col2:
+            st.success("📊 **Dinamik Raporlama**\n\nŞirket verilerinizi anında görselleştirin ve yönetim kuruluna sunulmaya hazır PDF'ler indirin.")
+        with col3:
+            st.warning("🏢 **Kurumsal Özelleştirme**\n\nKendi şirket adınızla ve verilerinizle (White-label) sistemi tamamen size özel kullanın.")
+            
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        c1, c2, c3 = st.columns([1,1,1])
+        with c2:
+            if st.button("🚀 Sisteme Giriş Yap / Ücretsiz Dene", use_container_width=True, type="primary"):
+                st.session_state['show_login'] = True
+                st.rerun()
+        st.stop()
+    else:
+        st.markdown("<br>", unsafe_allow_html=True)
+        c1, c2, c3 = st.columns([1,2,1])
+        with c2:
+            if st.button("⬅️ Vitrine Geri Dön"):
+                st.session_state['show_login'] = False
+                st.rerun()
+                
+        st.markdown("<h2 style='text-align: center;'>🔒 NexHR SaaS Platformu</h2>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            tab1, tab2, tab3 = st.tabs(["Giriş Yap", "Kayıt Ol", "Şifremi Unuttum"])
+            
+            with tab1:
+                with st.form("login_form"):
+                    email = st.text_input("E-posta Adresi")
+                    password = st.text_input("Şifre", type="password")
+                    submit = st.form_submit_button("Giriş Yap", use_container_width=True)
+                    if submit:
+                        try:
+                            res = sign_in(email, password)
+                            st.session_state['authenticated'] = True
+                            st.session_state['user_email'] = email
+                            st.success("Giriş başarılı! Yönlendiriliyorsunuz...")
+                            st.rerun()
+                        except Exception as e:
+                            st.error("Kullanıcı adı veya şifre hatalı! (Veya E-postanızı henüz onaylamadınız)")
+                            
+            with tab2:
+                with st.form("register_form"):
+                    new_email = st.text_input("E-posta Adresi (Geçerli bir adres girin)")
+                    new_password = st.text_input("Şifre (En az 6 karakter)", type="password")
+                    submit_reg = st.form_submit_button("Kayıt Ol", use_container_width=True)
+                    if submit_reg:
+                        try:
+                            res = sign_up(new_email, new_password)
+                            st.success("Kayıt başarılı! Lütfen E-postanıza gelen onay linkine tıklayın.")
+                            st.info("Not: Spam (Gereksiz) kutusunu kontrol etmeyi unutmayın.")
+                        except Exception as e:
+                            st.error(f"Kayıt sırasında hata oluştu: {str(e)}")
+                            
+            with tab3:
+                with st.form("reset_form"):
+                    reset_email = st.text_input("Şifrenizi sıfırlamak için E-posta adresinizi girin")
+                    submit_reset = st.form_submit_button("Şifre Sıfırlama Bağlantısı Gönder", use_container_width=True)
+                    if submit_reset:
+                        try:
+                            reset_password(reset_email)
+                            st.success("Şifre sıfırlama bağlantısı E-posta adresinize gönderildi!")
+                        except Exception as e:
+                            st.error("Bir hata oluştu, lütfen e-posta adresinizi kontrol edin.")
+        st.stop()
 
 # --- GÜVENLİ ALAN ---
 COLORS = ['#6366F1', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#8B5CF6', '#14B8A6', '#F97316']
@@ -100,7 +128,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🧠 NexHR - AI Performans Analitiği")
+company = st.session_state.get('company_name', 'NexHR')
+st.title(f"🧠 {company} - AI Performans Analitiği")
 st.markdown("İnsan kaynakları verilerini yapay zeka ile analiz ederek çalışan performansı ve işten ayrılma risklerini tahmin eden akıllı analitik platformu.")
 
 # --- 2. DOSYA YUKLEME (FILE UPLOAD) SİSTEMİ ---
@@ -108,6 +137,11 @@ with st.sidebar:
     st.header("⚙️ Ayarlar & Veri")
     if 'user_email' in st.session_state:
         st.caption(f"👤 {st.session_state['user_email']}")
+        
+    company_name = st.text_input("🏢 Şirket Adınız (Örn: Koç Holding)", value=st.session_state.get('company_name', 'NexHR'))
+    st.session_state['company_name'] = company_name
+    st.markdown("---")
+    
     st.markdown("Kendi şirket verinizi yükleyin.")
     uploaded_file = st.file_uploader("Excel veya CSV Yükle", type=['csv', 'xlsx'])
     
@@ -148,7 +182,7 @@ try:
     st.sidebar.markdown("---")
     st.sidebar.header("📥 Raporlar")
     
-    pdf_data = generate_pdf_report(df, kpi)
+    pdf_data = generate_pdf_report(df, kpi, company_name=st.session_state.get('company_name', 'NexHR'))
     st.sidebar.download_button(
         label="📄 PDF Özeti İndir",
         data=pdf_data,
@@ -218,4 +252,4 @@ except Exception as e:
     st.error(f"Veri yüklenirken bir hata oluştu: {str(e)}")
 
 st.markdown("---")
-st.markdown("<div style='text-align: center; color: #666;'>© 2026 NexHR Analytics</div>", unsafe_allow_html=True)
+st.markdown(f"<div style='text-align: center; color: #666;'>© 2026 {company} Analytics Powered by NexHR</div>", unsafe_allow_html=True)
