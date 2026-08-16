@@ -14,8 +14,17 @@ def has_supabase_credentials():
 
 def init_supabase() -> Client:
     """Supabase istemcisini baslatir."""
-    url = st.secrets["SUPABASE_URL"]
-    key = st.secrets["SUPABASE_KEY"]
+    url = str(st.secrets["SUPABASE_URL"]).strip().strip('"').strip("'")
+    key = str(st.secrets["SUPABASE_KEY"]).strip().strip('"').strip("'")
+    
+    # URL sonundaki / veya /rest/v1/ kisimlarini otomatik temizle
+    if url.endswith("/rest/v1/"):
+        url = url.replace("/rest/v1/", "")
+    if url.endswith("/rest/v1"):
+        url = url.replace("/rest/v1", "")
+    if url.endswith("/"):
+        url = url[:-1]
+        
     return create_client(url, key)
 
 def sign_up(email, password):
