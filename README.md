@@ -1,180 +1,57 @@
-# 🧠 NexHR – Yapay Zeka Destekli Departman & Çalışan Performans Analiz Sistemi
+<div align="center">
+  <img src="https://img.icons8.com/color/150/000000/brain.png" alt="NexHR Logo"/>
+  <h1>NexHR - AI Performans Analitiği (SaaS)</h1>
+  <p><strong>İnsan Kaynakları verilerinizi makine öğrenmesi ile analiz edin, yetenekleri keşfedin ve riskleri önceden tahmin edin.</strong></p>
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.30%2B-FF4B4B?logo=streamlit&logoColor=white)
-![XGBoost](https://img.shields.io/badge/XGBoost-ML-green?logo=xgboost)
-![SHAP](https://img.shields.io/badge/SHAP-Explainable_AI-orange)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+  <a href="https://muhammetomer-nexhr.streamlit.app" target="_blank">
+    <img src="https://img.shields.io/badge/CANLI_DEMO_İÇİN_TIKLAYIN-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Canlı Demo" />
+  </a>
+</div>
 
-> **NexHR**, organizasyonların çalışan ve departman performansını **yapay zeka destekli analitik, tahminsel modeller ve etkileşimli panolar** kullanarak takip etmesini, analiz etmesini ve optimize etmesini sağlayan modern bir İK (İnsan Kaynakları) analitiği platformudur.
+<br>
 
----
+## 🚀 Proje Hakkında
 
-## 📋 İçindekiler
+**NexHR**, modern şirketlerin veri odaklı kararlar almasını sağlayan, tamamen bulut tabanlı bir İK Asistanı ve Analitik Platformudur. Çalışan performans verilerini işleyerek kimlerin işten ayrılma riski taşıdığını saniyeler içinde analiz eder. 
 
-* [Genel Bakış](#-genel-bakış)
-* [Neden NexHR?](#-neden-nexhr)
-* [Temel Özellikler](#-temel-özellikler)
-* [Teknoloji Yığını](#️-teknoloji-yığını)
-* [Proje Yapısı](#-proje-yapısı)
-* [Kurulum ve Çalıştırma](#-kurulum-ve-çalıştırma)
-* [Ekran Görüntüleri](#-ekran-görüntüleri)
-* [Makine Öğrenmesi Modelleri](#-makine-öğrenmesi-modelleri)
-* [Yol Haritası](#️-yol-haritası)
-* [Lisans](#-lisans)
-* [Geliştirici](#-geliştirici)
+Geleneksel raporlamanın aksine **NexHR**, Supabase altyapısıyla güvenli bir "Multi-Tenant" (Çoklu Müşteri) SaaS deneyimi sunar. Şirketler kendi kurumsal markalarını sisteme tanımlayabilir ve kendilerine özel analiz raporları oluşturabilirler.
 
----
+## ✨ Öne Çıkan Özellikler
 
-## 🎯 Genel Bakış
+- **🔐 Güvenli Bulut Altyapısı (Supabase):** JWT tabanlı tam yetkilendirme, güvenli kayıt ve şifre sıfırlama işlemleri.
+- **🏢 Kurumsal Özelleştirme (White-Label):** Sisteme giriş yapan müşteriler, raporları ve analiz ekranlarını kendi şirket isimleriyle özelleştirebilirler.
+- **🧠 Yapay Zeka & Makine Öğrenmesi:** Çalışan verileri Scikit-Learn (Decision Tree) modeli ile analiz edilerek ayrılma ihtimali yüksek yetenekler tespit edilir.
+- **📈 Anında Raporlama (PDF & Excel):** Tek tıkla yönetim kuruluna sunulmaya hazır, formatlı ve logolu İK raporları oluşturulur.
+- **🔍 Açıklanabilir AI (SHAP):** Yapay zekanın "bu çalışan neden ayrılacak?" kararını hangi verilere (maaş, memnuniyet vb.) dayanarak verdiğini şeffafça açıklar.
 
-**NexHR**, geleneksel, subjektif ve reaktif İK süreçlerini **objektif, veri odaklı ve prediktif (tahminsel) içgörülerle** değiştirmek üzere tasarlanmış, kurumsal seviyede bir performans yönetim platformudur.
+## 🛠️ Kullanılan Teknolojiler
 
-Performans verilerini merkezileştirir, trendleri ve riskleri tespit etmek için makine öğrenmesi uygular ve her şeyi sezgisel, etkileşimli panolar aracılığıyla sunar.
+- **Frontend:** Streamlit, Plotly, HTML/CSS
+- **Backend & Veritabanı:** Python, Supabase (PostgreSQL)
+- **Yapay Zeka:** Pandas, Scikit-Learn, SHAP
+- **Raporlama:** FPDF2, OpenPyXL
 
----
+## 💻 Yerel Kurulum (Geliştiriciler İçin)
 
-## ❓ Neden NexHR?
-
-Geleneksel sistemlerin karşılaştığı sorunlar:
-
-❌ Subjektif değerlendirmeler ve yönetici önyargısı  
-❌ Bağlantısız veri kaynakları  
-❌ Performans sorunlarına geç tepki  
-❌ Pahalı, hantal kurumsal araçlar  
-❌ Kullanıcıların kaçındığı kötü arayüzler  
-
-**NexHR bunları şöyle çözer:**
-
-✅ Ölçülebilir KPI'lar ve objektif analitik  
-✅ Birleşik performans veri platformu  
-✅ Prediktif AI modelleri (tahminleme ve risk tespiti)  
-✅ Açık kaynak ve KOBİ dostu  
-✅ Temiz, modern ve etkileşimli kullanıcı deneyimi  
-
----
-
-## ✨ Temel Özellikler
-
-### 📊 Çekirdek Analitik
-* Gerçek zamanlı etkileşimli panolar (Dashboard)
-* Departman bazlı KPI takibi
-* Trend görselleştirme ve karşılaştırmalar
-* 9-Box Yetenek Matrisi (Performans × Potansiyel)
-* Çalışan profil kartları ve detaylı analiz
-
-### 🤖 AI / ML Yetenekleri
-* **İşten Ayrılma (Attrition) Tahmini** – XGBoost Classifier
-* **Performans Tahminlemesi** – Facebook Prophet (Zaman Serisi)
-* **Çalışan Segmentasyonu** – K-Means Kümeleme
-* **Açıklanabilir Yapay Zeka (Explainable AI)** – SHAP Değerleri
-* AI destekli risk puanlama sistemi
-
-### 📈 Gelişmiş Özellikler
-* Plotly ile yüksek kaliteli etkileşimli grafikler
-* Departman radar grafikleri ve ısı haritaları
-* Özellik önem sıralaması ve SHAP waterfall grafikleri
-* Filtreleme ve arama yetenekleri
-* Tek komutla çalışan altyapı (Docker gerektirmez)
-
----
-
-## 🛠️ Teknoloji Yığını
-
-| Katman | Teknoloji |
-|---|---|
-| **Frontend / Dashboard** | Streamlit, Plotly |
-| **Makine Öğrenmesi** | XGBoost, Prophet, scikit-learn, SHAP |
-| **Veri İşleme** | Pandas, NumPy |
-| **Görselleştirme** | Plotly Express, Plotly Graph Objects |
-| **Programlama Dili** | Python 3.10+ |
-
----
-
-## 📁 Proje Yapısı
-
-```
-nexhr-ai-performance-analytics/
-├── app.py                              # Ana sayfa ve Streamlit giriş noktası
-├── pages/
-│   ├── 1_👥_Calisan_Analizi.py         # Çalışan bazlı detaylı analiz
-│   ├── 2_🏢_Departman_Analitigi.py     # Departman karşılaştırma ve analitiği
-│   ├── 3_🤖_AI_Tahminleri.py          # XGBoost ile işten ayrılma tahmini
-│   └── 4_🧠_Aciklanabilir_AI.py       # SHAP ile AI karar açıklamaları
-├── data/
-│   ├── generate_data.py                # Sentetik veri seti üretici
-│   └── hr_employee_data.csv            # 15.000 satırlık çalışan verisi
-├── utils/
-│   ├── ml_engine.py                    # ML model motoru (XGBoost, Prophet, SHAP)
-│   └── data_processor.py              # Veri işleme yardımcı fonksiyonları
-├── models/                             # Eğitilmiş model dosyaları (otomatik oluşur)
-├── requirements.txt                    # Python bağımlılıkları
-├── .gitignore
-└── README.md
-```
-
----
-
-## 🚀 Kurulum ve Çalıştırma
-
-### Ön Gereksinimler
-* Python 3.10 veya üzeri
-* pip (Python paket yöneticisi)
-
-### Adım Adım Kurulum
+Projeyi kendi bilgisayarınızda çalıştırmak isterseniz:
 
 ```bash
-# 1. Projeyi klonlayın
-git clone https://github.com/MuhammetOmerd/nexhr-ai-performance-analytics.git
-cd nexhr-ai-performance-analytics
+# 1. Repoyu bilgisayarınıza indirin
+git clone https://github.com/MuhammetOmerd/-nexhr-ai-performance-analytics.git
+cd -nexhr-ai-performance-analytics
 
-# 2. Bağımlılıkları kurun
+# 2. Gerekli kütüphaneleri kurun
 pip install -r requirements.txt
 
-# 3. Veri setini üretin (ilk çalıştırmada gereklidir)
-python data/generate_data.py
+# 3. .streamlit/secrets.toml dosyası oluşturun ve Supabase bilgilerinizi ekleyin
+# SUPABASE_URL = "https://..."
+# SUPABASE_KEY = "eyJ..."
 
 # 4. Uygulamayı başlatın
 streamlit run app.py
 ```
 
-Uygulama otomatik olarak tarayıcınızda açılacaktır: **http://localhost:8501**
-
----
-
-## 🤖 Makine Öğrenmesi Modelleri
-
-| Model | Algoritma | Amaç |
-|---|---|---|
-| İşten Ayrılma Tahmini | XGBoost Classifier | Hangi çalışanların ayrılma riski taşıdığını tahmin eder |
-| Performans Tahminlemesi | Facebook Prophet | Gelecek dönem performans trendlerini öngörür |
-| Çalışan Segmentasyonu | K-Means Kümeleme | Benzer profildeki çalışanları gruplar |
-| Açıklanabilir AI | SHAP Values | AI kararlarının nedenlerini açıklar |
-
----
-
-## 🛣️ Yol Haritası
-
-- [x] Etkileşimli Dashboard
-- [x] Çalışan & Departman Analitiği
-- [x] XGBoost ile İşten Ayrılma Tahmini
-- [x] SHAP ile Açıklanabilir AI
-- [x] 9-Box Yetenek Matrisi
-- [ ] Bildirim sistemi
-- [ ] Gerçek zamanlı veri akışı (WebSockets)
-- [ ] Mobil uyumlu arayüz
-- [ ] PDF/Excel rapor dışa aktarma
-
----
-
-## 📄 Lisans
-
-MIT License
-
----
-
-## 👨‍💻 Geliştirici
-
-Bu proje, veri bilimi ve yapay zeka yeteneklerini sergilemek amacıyla **MuhammetOmerd** tarafından baştan sona tasarlanıp geliştirilmiştir.
-
-Sorularınız mı var? Bir **Issue** açın! 🚀
+<hr>
+<div align="center">
+  <p>💡 <b>Muhammet Ömer</b> tarafından tasarlandı ve geliştirildi.</p>
+</div>
