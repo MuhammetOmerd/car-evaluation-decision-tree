@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils.data_processor import load_data, get_kpi_metrics, get_department_stats
 from utils.report_generator import generate_pdf_report, generate_excel_report
+from utils.auth import has_supabase_credentials, sign_up, sign_in, reset_password
 
 st.set_page_config(page_title='NexHR - AI Performans Analitiği', page_icon='🧠', layout='wide')
 
@@ -14,22 +15,62 @@ st.set_page_config(page_title='NexHR - AI Performans Analitiği', page_icon='�
 if 'authenticated' not in st.session_state:
     st.session_state['authenticated'] = False
 
+if not has_supabase_credentials():
+    st.markdown("<h2 style='text-align: center;'>⚠️ Veritabanı Kurulumu Gerekli</h2>", unsafe_allow_html=True)
+    st.info("Bu uygulamayı ticari bir SaaS ürünü olarak kullanabilmeniz için ücretsiz bir Supabase veritabanına bağlamalısınız.")
+    st.markdown("### Nasıl Yapılır?")
+    st.markdown("1. [Supabase](https://supabase.com/)'e gidin ve ücretsiz kayıt olun.")
+    st.markdown("2. Yeni bir proje oluşturun.")
+    st.markdown("3. Proje ayarlarından (Settings > API) **Project URL** ve **anon public KEY** değerlerini kopyalayın.")
+    st.markdown("4. Streamlit Cloud'daki uygulamanızın ayarlarına (App Settings > Secrets) girin ve şu formatta yapıştırın:")
+    st.code("SUPABASE_URL = \"buraya_url_gelecek\"\nSUPABASE_KEY = \"buraya_key_gelecek\"")
+    st.markdown("5. Kaydettikten sonra uygulama otomatik olarak Gerçek Kayıt Ol/Giriş Yap ekranına dönecektir.")
+    st.stop()
+
 if not st.session_state['authenticated']:
-    st.markdown("<h2 style='text-align: center;'>🔒 Lütfen Giriş Yapın</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center;'>🔒 NexHR SaaS Platformu</h2>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        with st.form("login_form"):
-            username = st.text_input("Kullanıcı Adı")
-            password = st.text_input("Şifre", type="password")
-            submit = st.form_submit_button("Giriş Yap", use_container_width=True)
-            
-            if submit:
-                if username == "admin" and password == "nexhr2026":
-                    st.session_state['authenticated'] = True
-                    st.success("Giriş başarılı! Yönlendiriliyorsunuz...")
-                    st.rerun()
-                else:
-                    st.error("Kullanıcı adı veya şifre hatalı!")
+        tab1, tab2, tab3 = st.tabs(["Giriş Yap", "Kayıt Ol", "Şifremi Unuttum"])
+        
+        with tab1:
+            with st.form("login_form"):
+                email = st.text_input("E-posta Adresi")
+                password = st.text_input("Şifre", type="password")
+                submit = st.form_submit_button("Giriş Yap", use_container_width=True)
+                if submit:
+                    try:
+                        res = sign_in(email, password)
+                        st.session_state['authenticated'] = True
+                        st.session_state['user_email'] = email
+                        st.success("Giriş başarılı! Yönlendiriliyorsunuz...")
+                        st.rerun()
+                    except Exception as e:
+                        st.error("Kullanıcı adı veya şifre hatalı! (Veya E-postanızı henüz onaylamadınız)")
+                        
+        with tab2:
+            with st.form("register_form"):
+                new_email = st.text_input("E-posta Adresi (Geçerli bir adres girin)")
+                new_password = st.text_input("Şifre (En az 6 karakter)", type="password")
+                submit_reg = st.form_submit_button("Kayıt Ol", use_container_width=True)
+                if submit_reg:
+                    try:
+                        res = sign_up(new_email, new_password)
+                        st.success("Kayıt başarılı! Lütfen E-postanıza gelen onay linkine tıklayın.")
+                        st.info("Not: Spam (Gereksiz) kutusunu kontrol etmeyi unutmayın.")
+                    except Exception as e:
+                        st.error(f"Kayıt sırasında hata oluştu: {str(e)}")
+                        
+        with tab3:
+            with st.form("reset_form"):
+                reset_email = st.text_input("Şifrenizi sıfırlamak için E-posta adresinizi girin")
+                submit_reset = st.form_submit_button("Şifre Sıfırlama Bağlantısı Gönder", use_container_width=True)
+                if submit_reset:
+                    try:
+                        reset_password(reset_email)
+                        st.success("Şifre sıfırlama bağlantısı E-posta adresinize gönderildi!")
+                    except Exception as e:
+                        st.error("Bir hata oluştu, lütfen e-posta adresinizi kontrol edin.")
     st.stop() # Giris yapilmadan asagiya inilmez
 
 # --- GÜVENLİ ALAN ---
@@ -65,6 +106,8 @@ st.markdown("İnsan kaynakları verilerini yapay zeka ile analiz ederek çalış
 # --- 2. DOSYA YUKLEME (FILE UPLOAD) SİSTEMİ ---
 with st.sidebar:
     st.header("⚙️ Ayarlar & Veri")
+    if 'user_email' in st.session_state:
+        st.caption(f"👤 {st.session_state['user_email']}")
     st.markdown("Kendi şirket verinizi yükleyin.")
     uploaded_file = st.file_uploader("Excel veya CSV Yükle", type=['csv', 'xlsx'])
     
@@ -87,6 +130,8 @@ with st.sidebar:
     st.markdown("---")
     if st.button("Çıkış Yap", type="secondary", use_container_width=True):
         st.session_state['authenticated'] = False
+        if 'user_email' in st.session_state:
+            del st.session_state['user_email']
         st.rerun()
 
 @st.cache_data(ttl=60) # Cache süresi verip özel verinin güncellenmesini sağla
