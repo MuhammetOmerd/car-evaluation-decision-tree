@@ -85,7 +85,7 @@ try:
         
         probs = predictor.predict_proba(X)
         risk_df = df.copy()
-        risk_df['AttritionProbability'] = probs
+        risk_df['AttritionProbability'] = probs[:, 1]
         risk_df['RiskScore'] = risk_df.apply(lambda row: calculate_risk_score(row['AttritionProbability'], row['SatisfactionScore'], row['PerformanceScore']), axis=1)
         
         def get_risk_level(score):

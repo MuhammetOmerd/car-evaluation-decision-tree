@@ -83,7 +83,7 @@ try:
                     
             plot_df = pd.DataFrame(plot_data)
             fig_bee = px.strip(plot_df, x='SHAP Value', y='Feature', color='Feature Value',
-                               color_continuous_scale="RdBu_r", orientation='h', stripmode='overlay')
+                               orientation='h', stripmode='overlay')
             fig_bee.update_layout(template="plotly_dark")
             st.plotly_chart(fig_bee, use_container_width=True)
         else:
