@@ -103,13 +103,14 @@ class AttritionPredictor:
         """Olasılık tahmini yapar."""
         return self.model.predict_proba(X)
         
-    def get_feature_importance(self):
+    def get_feature_importance(self, feature_names=None):
         """Özellik önem sıralamasını döndürür."""
+        if feature_names is not None:
+            self.feature_names = feature_names
         if self.feature_names is None:
-            return {}
+            return pd.DataFrame()
         importance = self.model.feature_importances_
-        feat_imp = dict(zip(self.feature_names, importance))
-        return dict(sorted(feat_imp.items(), key=lambda item: item[1], reverse=True))
+        return pd.DataFrame({'feature': self.feature_names, 'importance': importance})
         
     def evaluate(self, X_test, y_test):
         """Model performansını değerlendirir."""
@@ -166,23 +167,28 @@ class EmployeeSegmenter:
 
 class ExplainableAI:
     """SHAP ile model açıklanabilirliği."""
-    def __init__(self, model, X_data):
+    def __init__(self, model, feature_names):
         self.model = model
-        self.X_data = X_data
+        self.feature_names = feature_names
         self.explainer = shap.TreeExplainer(self.model)
         
-    def get_shap_values(self):
-        return self.explainer.shap_values(self.X_data)
+    def get_shap_values(self, X):
+        return self.explainer.shap_values(X)
         
-    def get_summary_data(self):
-        shap_vals = self.get_shap_values()
-        return shap_vals, self.X_data
+    def get_summary_data(self, shap_values, X):
+        if len(shap_values.shape) == 3:
+            mean_abs_shap = np.abs(shap_values).mean(axis=(0, 2))
+        else:
+            mean_abs_shap = np.abs(shap_values).mean(axis=0)
+        return pd.DataFrame({'feature': self.feature_names, 'importance': mean_abs_shap})
         
-    def get_individual_explanation(self, idx):
-        shap_vals = self.explainer.shap_values(self.X_data[idx:idx+1])
-        base_value = self.explainer.expected_value
-        return {
-            'base_value': float(base_value[0] if isinstance(base_value, np.ndarray) else base_value),
-            'shap_values': shap_vals[0].tolist(),
-            'feature_values': self.X_data[idx].tolist()
-        }
+    def get_individual_explanation(self, shap_values, X, idx):
+        if len(shap_values.shape) == 3:
+            s_vals = shap_values[idx, :, 1]
+        else:
+            s_vals = shap_values[idx]
+        return pd.DataFrame({
+            'feature': self.feature_names,
+            'feature_value': X[idx],
+            'shap_value': s_vals
+        })

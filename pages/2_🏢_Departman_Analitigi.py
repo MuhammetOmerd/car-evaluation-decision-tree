@@ -40,7 +40,7 @@ def get_data():
 
 try:
     df = get_data()
-    dept_stats = get_department_stats(df).reset_index()
+    dept_stats = pd.DataFrame(get_department_stats(df))
     
     st.sidebar.header("Departman Seçimi")
     selected_dept = st.sidebar.selectbox("Detaylı analiz için seçin", df['Department'].unique())
